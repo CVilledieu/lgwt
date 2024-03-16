@@ -5,6 +5,7 @@ type Dictionary map[string]string
 const (
 	ErrNotFound   = DictionaryErr("could not find the word you were looking for")
 	ErrWordExists = DictionaryErr("cannot add word because it already exists")
+	ErrDeleteWord = DictionaryErr("could not find word to delete")
 )
 
 type DictionaryErr string
@@ -48,4 +49,19 @@ func (d Dictionary) Update(word, definition string) error {
 		return err
 	}
 	return nil
+}
+
+func (d Dictionary) Delete(word string) error {
+	_, err := d.Search(word)
+
+	switch err {
+	case ErrNotFound:
+		return ErrDeleteWord
+	case nil:
+		delete(d, word)
+	default:
+		return err
+	}
+	return ErrNotFound
+
 }
